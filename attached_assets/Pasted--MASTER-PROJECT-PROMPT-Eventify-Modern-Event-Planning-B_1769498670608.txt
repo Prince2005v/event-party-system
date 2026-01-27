@@ -1,0 +1,294 @@
+ 🚀 MASTER PROJECT PROMPT
+Eventify – Modern Event Planning & Booking Platform
+📌 Project Overview
+
+Build a full-stack, real-world event planning and booking platform called Eventify.
+The platform allows users to discover event types, select multiple events, customize them, and book professionally managed events, similar to how real event companies work.
+
+This project must be portfolio-ready, scalable, cleanly architected, and production-oriented.
+
+🎯 Core Vision (VERY IMPORTANT)
+
+Eventify is not just a listing app.
+
+It is:
+
+A decision-based event selection system
+
+With persistent selections
+
+A guided booking flow
+
+And a clear separation between exploration, selection, and confirmation
+
+This mimics real user behavior in event planning.
+
+🧱 Tech Stack (Strict)
+Frontend
+
+Next.js (App Router)
+
+TypeScript
+
+Tailwind CSS
+
+Client Components where needed
+
+LocalStorage + Context for selection state
+
+Backend
+
+Django
+
+Django REST Framework
+
+JWT Authentication
+
+PostgreSQL (or SQLite in dev)
+
+RESTful API architecture
+
+🧠 USER FLOW (END-TO-END)
+1️⃣ Landing Page
+
+Hero section
+
+Featured events (top 3)
+
+Clean CTA: Explore / Create Event
+
+2️⃣ Explore Events
+
+Static + API-driven events
+
+Categories (Party, Wedding, Birthday, Corporate, etc.)
+
+User can select / unselect events
+
+Selection persists across pages
+
+Selected count visible in Navbar
+
+3️⃣ Selection Logic (VERY IMPORTANT EDGE)
+
+Selected events stored in:
+
+LocalStorage (frontend)
+
+Optional backend sync (for logged-in users)
+
+Count badge visible near Login / Profile
+
+Badge must update in real time
+
+4️⃣ Authentication
+
+User can browse without login
+
+Login required only for:
+
+Booking
+
+Dashboard
+
+After login:
+
+Previous selected events should still exist
+
+5️⃣ Review Selected Events Page
+
+Shows only selected events
+
+Allows removal
+
+Calculates total estimated price
+
+CTA: “Proceed to Booking”
+
+6️⃣ Booking Flow
+
+Confirm booking
+
+Backend calculates final price
+
+Booking status system:
+
+Pending
+
+Confirmed
+
+Cancelled
+
+7️⃣ Dashboard
+
+Summary cards:
+
+Selected events count
+
+Total bookings
+
+Total spent
+
+Recent bookings list
+
+🗃️ DATA MODELS (WITH REALISTIC EDGES)
+User
+
+id
+
+name
+
+email (unique)
+
+password (hashed)
+
+created_at
+
+is_admin
+
+Event
+
+id
+
+title
+
+description
+
+category
+
+base_price
+
+image_url
+
+is_featured
+
+is_active
+
+created_at
+
+Edge: inactive events should not appear on frontend
+
+SelectedEvent
+
+id
+
+user (nullable for guest)
+
+event
+
+session_key (for guests)
+
+selected_at
+
+🔥 Edge: supports both logged-in & guest users
+
+Booking
+
+id
+
+user
+
+events (ManyToMany)
+
+total_price
+
+status
+
+booking_reference
+
+created_at
+
+🔐 AUTHENTICATION & SECURITY
+
+JWT authentication
+
+Token stored only in frontend
+
+Protected routes:
+
+Booking
+
+Dashboard
+
+Admin-only routes:
+
+Create / update events
+
+Mark featured events
+
+🌐 API DESIGN (CLEAN & CONSISTENT)
+POST   /api/register/
+POST   /api/login/
+
+GET    /api/events/
+GET    /api/events/featured/
+GET    /api/events/<id>/
+
+POST   /api/select-event/
+GET    /api/selected-events/
+DELETE /api/selected-events/<id>/
+
+POST   /api/book-events/
+GET    /api/my-bookings/
+
+GET    /api/dashboard/
+
+🧠 SMART EDGES (PORTFOLIO BOOSTERS)
+
+These are extra features added intentionally:
+
+✅ Persistent selection even after login
+✅ Guest → Logged-in merge logic
+✅ Real-time badge count in navbar
+✅ Featured events system
+✅ Graceful fallback if backend fails
+✅ Clean empty & loading states
+✅ No hard refresh dependency
+✅ Professional folder & API structure
+🎨 UI / UX EXPECTATIONS
+
+Dark modern UI
+
+Smooth hover animations
+
+Skeleton loaders
+
+No broken states
+
+Mobile responsive
+
+🧪 ERROR HANDLING
+
+Clear API errors
+
+Frontend-friendly responses
+
+No raw Django errors exposed
+
+🚀 FINAL EXPECTATION
+
+The final product must:
+
+Feel like a real startup MVP
+
+Be interview-ready
+
+Show architectural thinking
+
+Demonstrate frontend + backend integration
+
+Be scalable and extendable
+
+🏁 BONUS IDEAS (OPTIONAL FUTURE SCOPE)
+
+Payment gateway integration
+
+Event customization options
+
+Admin analytics
+
+Email confirmations
+
+🧠 IMPORTANT NOTE FOR AI / DEVELOPER
+
+Focus on clean architecture, real-world logic, and long-term scalability, not shortcuts.this promt divided into small smalll parts
