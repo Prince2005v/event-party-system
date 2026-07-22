@@ -1,21 +1,25 @@
 import { z } from 'zod';
-import { insertEventSchema, events, selectedEvents, bookings } from './schema';
+import { events, selectedEvents, bookings, coupons } from './schema';
 
 // ============================================
 // SHARED ERROR SCHEMAS
 // ============================================
 export const errorSchemas = {
   validation: z.object({
+    success: z.literal(false),
     message: z.string(),
-    field: z.string().optional(),
+    errors: z.array(z.string()).optional(),
   }),
   notFound: z.object({
+    success: z.literal(false),
     message: z.string(),
   }),
   internal: z.object({
+    success: z.literal(false),
     message: z.string(),
   }),
   unauthorized: z.object({
+    success: z.literal(false),
     message: z.string(),
   }),
 };
@@ -24,25 +28,41 @@ export const errorSchemas = {
 // API CONTRACT
 // ============================================
 export const api = {
+  auth: {
+    signup: {
+      method: 'POST' as const,
+      path: '/api/auth/signup',
+    },
+    login: {
+      method: 'POST' as const,
+      path: '/api/auth/login',
+    },
+    logout: {
+      method: 'POST' as const,
+      path: '/api/auth/logout',
+    },
+    me: {
+      method: 'GET' as const,
+      path: '/api/auth/me',
+    },
+  },
   events: {
     list: {
       method: 'GET' as const,
       path: '/api/events',
       input: z.object({
+        search: z.string().optional(),
         category: z.string().optional(),
         featured: z.string().optional(), // 'true' or 'false'
+        minPrice: z.string().optional(),
+        maxPrice: z.string().optional(),
+        rating: z.string().optional(),
+        sortBy: z.enum(['newest', 'popular', 'price_asc', 'price_desc']).optional(),
       }).optional(),
-      responses: {
-        200: z.array(z.custom<typeof events.$inferSelect>()),
-      },
     },
     get: {
       method: 'GET' as const,
       path: '/api/events/:id',
-      responses: {
-        200: z.custom<typeof events.$inferSelect>(),
-        404: errorSchemas.notFound,
-      },
     },
   },
   selectedEvents: {
@@ -52,9 +72,6 @@ export const api = {
       input: z.object({
         sessionKey: z.string().optional(),
       }).optional(),
-      responses: {
-        200: z.array(z.custom<typeof selectedEvents.$inferSelect & { event: typeof events.$inferSelect }>()),
-      },
     },
     add: {
       method: 'POST' as const,
@@ -63,21 +80,20 @@ export const api = {
         eventId: z.number(),
         sessionKey: z.string().optional(),
       }),
-      responses: {
-        201: z.custom<typeof selectedEvents.$inferSelect>(),
-        400: errorSchemas.validation,
-      },
     },
     remove: {
       method: 'DELETE' as const,
       path: '/api/selected-events/:id',
+    },
+  },
+  coupons: {
+    validate: {
+      method: 'POST' as const,
+      path: '/api/coupons/validate',
       input: z.object({
-        sessionKey: z.string().optional(),
-      }).optional(),
-      responses: {
-        204: z.void(),
-        404: errorSchemas.notFound,
-      },
+        code: z.string(),
+        subtotal: z.number(),
+      }),
     },
   },
   bookings: {
@@ -86,41 +102,42 @@ export const api = {
       path: '/api/bookings',
       input: z.object({
         eventIds: z.array(z.number()),
+        promoCode: z.string().optional(),
+        notes: z.string().optional(),
       }),
-      responses: {
-        201: z.custom<typeof bookings.$inferSelect>(),
-        400: errorSchemas.validation,
-        401: errorSchemas.unauthorized,
-      },
     },
     list: {
       method: 'GET' as const,
       path: '/api/bookings',
-      responses: {
-        200: z.array(z.custom<typeof bookings.$inferSelect>()),
-        401: errorSchemas.unauthorized,
-      },
+    },
+    get: {
+      method: 'GET' as const,
+      path: '/api/bookings/:id',
+    },
+    updateStatus: {
+      method: 'PATCH' as const,
+      path: '/api/bookings/:id',
+      input: z.object({
+        status: z.enum(['pending', 'confirmed', 'completed', 'cancelled']),
+      }),
+    },
+    cancel: {
+      method: 'DELETE' as const,
+      path: '/api/bookings/:id',
     },
   },
   dashboard: {
     get: {
       method: 'GET' as const,
       path: '/api/dashboard',
-      responses: {
-        200: z.object({
-          totalBookings: z.number(),
-          totalSpent: z.number(),
-          recentBookings: z.array(z.any()), // Simplified for now
-        }),
-        401: errorSchemas.unauthorized,
-      },
     },
   },
 };
 
-// ============================================
-// HELPER FUNCTIONS
-// ============================================
+// Re-export type definitions for convenience
+export type { EventResponse, SelectedEventResponse, BookingResponse, DashboardStatsResponse } from './schema';
+
+// Helper function to replace parameters in path
 export function buildUrl(path: string, params?: Record<string, string | number>): string {
   let url = path;
   if (params) {
