@@ -109,6 +109,10 @@ npm run build
 npm start
 ```
 
+
+- **SaaS Analytics Dashboard:** 6 KPI metrics cards, Recharts spending area chart, category pie chart distribution, live reservation management, and booking cancellation.
+- **Authentication:** Dual support for Passport Replit Auth & local session authentication with password hashing (`crypto.pbkdf2`).
+
 ---
 
 ## 📄 License
